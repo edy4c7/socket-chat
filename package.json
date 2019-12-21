@@ -1,0 +1,16 @@
+{
+  "name": "socket-chat",
+  "version": "1.0.0",
+  "main": "app.js",
+  "author": "edy4c7",
+  "license": "MIT",
+  "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "express": "^4.17.1",
+    "pug": "^2.0.4",
+    "socket.io": "^2.3.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

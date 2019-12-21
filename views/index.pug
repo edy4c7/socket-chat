@@ -1,0 +1,12 @@
+extends _layout.pug
+block body
+  form(action="/room", method="post")
+    table
+      tr
+        td: label(for="id") RoomId
+        td: input(type="text", name="id")
+      tr
+        td: label(for="password") Password
+        td: input(type="password", name="password")
+      tr
+        td: input(type="submit", value="Join")
