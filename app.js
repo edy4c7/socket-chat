@@ -11,7 +11,7 @@ app.use(cookieParser());
 function restrict(req, res, next) {
   if(!req.cookies.token) {
     res.status(403);
-    res.sendfile(`${__dirname}/index.html`);
+    res.render('index')
   } else {
     next();
   }
@@ -27,7 +27,7 @@ app.post('/room', (req, res) => {
     res.redirect(`/room/${req.body.id}`);
   } else {
     res.status(403);
-    res.sendfile(`${__dirname}/index.html`);
+    res.render('index')
   }
 });
 
