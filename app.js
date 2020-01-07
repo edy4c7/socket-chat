@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const session = require('express-session')
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const cookieParser = require('cookie-parser');
@@ -7,11 +8,19 @@ const cookieParser = require('cookie-parser');
 app.set('view engine', 'pug');
 app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
+app.set('trust proxy', 1)
+
+const sessionMiddleWare = session({
+  secret: 'keyboard cat',
+  resave: false,
+});
+
+app.use(sessionMiddleWare);
 
 function restrict(req, res, next) {
-  if(!req.cookies.token) {
+  if(!req.session.room) {
     res.status(403);
-    res.render('index')
+    res.redirect('/')
   } else {
     next();
   }
@@ -23,7 +32,7 @@ app.get('/', (req, res) => {
 
 app.post('/room', (req, res) => {
   if(req.body.password == 'password'){
-    res.cookie('token', 'token1234');
+    req.session.room = req.body.id
     res.redirect(`/room/${req.body.id}`);
   } else {
     res.status(403);
@@ -32,11 +41,15 @@ app.post('/room', (req, res) => {
 });
 
 app.get('/room/:roomId', restrict, (req, res) => {
-  res.render('chat', {token: req.cookies.token});
+  res.render('chat', {token: req.session.token});
 });
 
 io.use((socket, next) => {
-  if(socket.handshake.query.token !== 'token1234') {
+  sessionMiddleWare(socket.request, socket.request.res, next);
+});
+
+io.use((socket, next) => {
+  if(!socket.request.session.room) {
     console.error('Authentication failed');
     return next(new Error('Authentication failed'));
   }

@@ -3,18 +3,13 @@ block body
   form(action="")
     input(type="text" name="m" id="m")
     button(id="btn-send",disabled) send
-    input(type="hidden", id="token", name="token", value=`${token}`)
   ul#messages
   script(src="/socket.io/socket.io.js")
   script(src="https://code.jquery.com/jquery-1.11.1.js")
   script.
     jQuery(($) => {
-      var token = $('#token').val();
-      var socket = io({
-        query: {
-          token: token
-        }
-      });
+      var socket = io();
+
       var roomId = window.location.pathname.slice(1).split('/')[1]
       var isJoined = false;
 
