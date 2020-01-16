@@ -17,39 +17,42 @@ const sessionMiddleWare = session({
 
 app.use(sessionMiddleWare);
 
-function restrict(req, res, next) {
-  if(!req.session.room) {
-    res.status(403);
-    res.redirect('/')
-  } else {
-    next();
-  }
-}
-
 app.get('/', (req, res) => {
   res.render('index')
 });
 
 app.post('/room', (req, res) => {
-  if(req.body.password == 'password'){
-    req.session.room = req.body.id
-    res.redirect(`/room/${req.body.id}`);
-  } else {
+  if(!req.body.password == 'password'){
     res.status(403);
-    res.render('index')
+    res.render('index');
+    return;
   }
+  if(!req.session.rooms) req.session.rooms = [];
+  req.session.rooms.push(req.body.id);
+  res.redirect(`/room/${req.body.id}`);
 });
 
-app.get('/room/:roomId', restrict, (req, res) => {
-  res.render('chat');
-});
+app.get('/room/:roomId',
+  (req, res, next) => {
+    const rooms = req.session.rooms || [];
+    if(!rooms.includes(req.params.roomId)) {
+      res.status(403);
+      res.redirect('/')
+    } else {
+      next();
+    }
+  },
+  (req, res) => {
+    res.render('chat');
+  }
+);
 
 io.use((socket, next) => {
   sessionMiddleWare(socket.request, socket.request.res, next);
 });
 
 io.use((socket, next) => {
-  if(!socket.request.session.room) {
+  if(!socket.request.session.rooms) {
     console.error('Authentication failed');
     return next(new Error('Authentication failed'));
   }
