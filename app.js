@@ -41,7 +41,7 @@ app.post('/room', (req, res) => {
 });
 
 app.get('/room/:roomId', restrict, (req, res) => {
-  res.render('chat', {token: req.session.token});
+  res.render('chat');
 });
 
 io.use((socket, next) => {
@@ -53,20 +53,27 @@ io.use((socket, next) => {
     console.error('Authentication failed');
     return next(new Error('Authentication failed'));
   }
+  let referer = socket.request.headers.referer || '';
+  if(!/\/room\/[0-9a-zA-Z]+\/?$/.test(referer)){
+    console.error('Invalid referer');
+    return next(new Error('Invalid referer'));
+  }
+
   console.log('Authentication success');
   return next();
 });
 
 io.on('connection', (socket) => {
-  let room = '';
-
   console.log(`a user connected. Id is ${socket.id}`);
-  socket.on('join_to_room', (roomId) => {
-    socket.join(roomId, () => {
-      room = roomId;  
-      console.log(`${socket.id} joined to ${roomId}`);
-      io.to(socket.id).emit('joined_to_room', { roomId });
-    });
+
+  let referer = socket.request.headers.referer;
+  let requestRoomId = referer.match(/\/[0-9a-zA-Z]+\/?$/)[0].replace(/\//g, '');
+  
+  let room = '';
+  socket.join(requestRoomId, () => {
+    room = requestRoomId;  
+    console.log(`${socket.id} joined to ${requestRoomId}`);
+    io.to(socket.id).emit('joined_to_room', { requestRoomId });
   });
 
   socket.on('chat message', (msg) => {

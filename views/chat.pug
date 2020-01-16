@@ -10,10 +10,8 @@ block body
     jQuery(($) => {
       var socket = io();
 
-      var roomId = window.location.pathname.slice(1).split('/')[1]
       var isJoined = false;
 
-      socket.emit('join_to_room', roomId);
       $('form').on('submit', (e) => {
         if(!isJoined) {
           console.error('not joined room');
@@ -25,10 +23,8 @@ block body
         return false;
       })
       socket.on('joined_to_room', (param) => {
-        if(param.roomId === roomId) {
-          $('#btn-send').prop('disabled', false);
-          isJoined = true;
-        }
+        $('#btn-send').prop('disabled', false);
+        isJoined = true;
       });
       socket.on('chat message', (msg) => {
         $('#messages').append($('<li>').text(msg));
