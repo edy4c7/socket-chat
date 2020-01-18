@@ -10,6 +10,13 @@ app.use(express.urlencoded({extended: true}));
 app.use(cookieParser());
 app.set('trust proxy', 1)
 
+function getRoomIdFromUri(referer) {
+  let route = (referer || '').match(/\/room\/[0-9a-zA-Z]+\/?$/);
+  if(!route) return null;
+  return route[0].replace(/\/room\//g, '')
+              .replace(/\//g, '');
+}
+
 const sessionMiddleWare = session({
   secret: 'keyboard cat',
   resave: false,
@@ -52,14 +59,15 @@ io.use((socket, next) => {
 });
 
 io.use((socket, next) => {
-  if(!socket.request.session.rooms) {
-    console.error('Authentication failed');
-    return next(new Error('Authentication failed'));
-  }
-  let referer = socket.request.headers.referer || '';
-  if(!/\/room\/[0-9a-zA-Z]+\/?$/.test(referer)){
+  let roomId = getRoomIdFromUri(socket.request.headers.referer);
+  if(!roomId){
     console.error('Invalid referer');
     return next(new Error('Invalid referer'));
+  }
+  let rooms = socket.request.session.rooms || [];
+  if(!rooms.includes(roomId)) {
+    console.error('Authentication failed');
+    return next(new Error('Authentication failed'));
   }
 
   console.log('Authentication success');
@@ -69,8 +77,7 @@ io.use((socket, next) => {
 io.on('connection', (socket) => {
   console.log(`a user connected. Id is ${socket.id}`);
 
-  let referer = socket.request.headers.referer;
-  let requestRoomId = referer.match(/\/[0-9a-zA-Z]+\/?$/)[0].replace(/\//g, '');
+  let requestRoomId = getRoomIdFromUri(socket.request.headers.referer);
   
   let room = '';
   socket.join(requestRoomId, () => {
