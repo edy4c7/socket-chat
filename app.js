@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
   res.render('index')
 });
 
-app.post('/room', (req, res) => {
+app.post('/room/join', (req, res) => {
   if(!req.body.password == 'password'){
     res.status(403);
     res.render('index');
