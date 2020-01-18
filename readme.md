@@ -1,3 +1,3 @@
 # Socket chat
 
-Socket.ioでチャットするやつ
+Socket.ioでチャットするサンプル。
