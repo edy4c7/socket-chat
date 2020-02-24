@@ -1,6 +1,6 @@
 # socket-chat
-
-> My cat&#39;s pajamas Nuxt.js project
+Socket.ioでチャットをするサンプル。  
+※パスワードの管理とかチャットとあんまり関係ないところは端折ってます。
 
 ## Build Setup
 
