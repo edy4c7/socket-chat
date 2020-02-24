@@ -22,6 +22,12 @@
 import io from 'socket.io-client'
 
 export default {
+  middleware ({ store, redirect, params }) {
+    const rooms = store.state.auth.user.rooms || []
+    if (!rooms.includes(params.id)) {
+      redirect({ path: `/join?roomId=${params.id}` })
+    }
+  },
   data () {
     return {
       isJoined: false,
@@ -40,7 +46,6 @@ export default {
     }
   },
   mounted () {
-    /* eslint no-unused-vars: 0 */
     this.socket.on('joined', () => {
       this.isJoined = true
     })
@@ -55,7 +60,12 @@ export default {
       })
       this.message = ''
     },
-    leave () {
+    async leave () {
+      await this.$auth.logout({
+        data: {
+          roomId: this.$route.params.id
+        }
+      })
     }
   }
 }

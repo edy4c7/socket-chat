@@ -46,6 +46,8 @@ import Card from '~/components/Card'
 export default {
   name: 'HomePage',
 
+  auth: false,
+
   components: {
     Card
   }

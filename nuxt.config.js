@@ -43,7 +43,8 @@ module.exports = {
     // Doc: https://buefy.github.io/#/documentation
     'nuxt-buefy',
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/auth'
   ],
   /*
   ** Axios module configuration
@@ -59,6 +60,26 @@ module.exports = {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
+    }
+  },
+  router: {
+    middleware: ['auth']
+  },
+  auth: {
+    strategies: {
+      local: {
+        endpoints: {
+          login: { url: '/api/auth/join', method: 'post' },
+          logout: { url: '/api/auth/leave', method: 'post' },
+          user: { url: '/api/auth/user', method: 'get', propertyName: false }
+        },
+        tokenRequired: false,
+        tokenType: false
+      }
+    },
+    redirect: {
+      login: '/join',
+      home: false
     }
   }
 }

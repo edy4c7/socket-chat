@@ -2,7 +2,8 @@ const router = require('express').Router()
 
 const routes = {
   '/': require('./routes/greeting'),
-  '/room': require('./routes/room')
+  '/room': require('./routes/room'),
+  '/auth': require('./routes/auth')
 }
 
 Object.keys(routes).forEach((path) => {
