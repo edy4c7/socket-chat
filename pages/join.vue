@@ -1,13 +1,15 @@
 <template>
-  <div>
-    <form @submit.prevent="join" method="post">
-      <label for="roomId">roomId</label>
-      <input v-model="roomId" name="roomId" type="text">
-      <label for="password">password</label>
-      <input v-model="password" name="password" type="password">
-      <button type="submit">
+  <div class="container">
+    <form @submit.prevent="join">
+      <b-field label="Room ID">
+        <b-input v-model="roomId" />
+      </b-field>
+      <b-field label="Password">
+        <b-input v-model="password" type="password" />
+      </b-field>
+      <b-button type="is-primary" native-type="submit">
         Join
-      </button>
+      </b-button>
     </form>
   </div>
 </template>

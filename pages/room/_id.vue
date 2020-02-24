@@ -1,19 +1,25 @@
 <template>
-  <div>
+  <div class="container">
     <form @submit.prevent="send" action="">
-      <input id="message" v-model="message" type="text" name="message">
-      <button :disabled="!isJoined" type="submit">
+      <b-field label="Message">
+        <b-input v-model="message" />
+      </b-field>
+      <b-button :disabled="!isJoined" type="is-primary" native-type="submit">
         send
-      </button>
-      <ul>
-        <li v-for="(m, i) in messages" :key="i">
-          {{ m }}
-        </li>
-      </ul>
+      </b-button>
     </form>
-    <input v-model="url" type="text" readonly>
+    <ul>
+      <li v-for="(m, i) in messages" :key="i">
+        {{ m }}
+      </li>
+    </ul>
+    <b-field label="URL for join">
+      <b-input v-model="url" readonly />
+    </b-field>
     <form @submit.prevent="leave" action="">
-      <button>leave</button>
+      <b-button native-type="submit">
+        leave
+      </b-button>
     </form>
   </div>
 </template>
