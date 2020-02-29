@@ -28,7 +28,8 @@
 import io from 'socket.io-client'
 
 export default {
-  middleware ({ store, redirect, params }) {
+  async middleware ({ store, redirect, params, $auth }) {
+    await $auth.fetchUser()
     const rooms = store.state.auth.user.rooms || []
     if (!rooms.includes(params.id)) {
       redirect({ path: `/join?roomId=${params.id}` })

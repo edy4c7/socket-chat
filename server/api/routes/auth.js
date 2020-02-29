@@ -1,17 +1,40 @@
 const router = require('express').Router()
+const { getConnection } = require('typeorm')
+const bcrypt = require('bcrypt')
+const moment = require('moment')
+const Room = require('../../models/Room')
 
 router.post('/join', (req, res) => {
-  if (req.body.password !== 'password') {
-    res.status(403).end()
-    return
-  }
-  if (!req.session.rooms) {
-    req.session.rooms = []
-  }
-  req.session.rooms.push(req.body.roomId)
-  res.json({
-    rooms: req.session.rooms
-  })
+  const conn = getConnection()
+  const repo = conn.getRepository(Room)
+  let room = null
+
+  repo.findOne({ id: req.body.roomId })
+    .then((result) => {
+      room = result
+      if (moment().isAfter(moment(result.expireDate))) {
+        throw new Error('room is closed')
+      }
+      return bcrypt.compare(req.body.password, room.password)
+    })
+    .then((result) => {
+      if (!result) {
+        res.status(403).end()
+        return
+      }
+      if (!req.session.rooms) {
+        req.session.rooms = []
+      }
+      if (!req.session.rooms.includes(room.id)) {
+        req.session.rooms.push(room.id)
+      }
+      res.json({
+        rooms: req.session.rooms
+      })
+    })
+    .catch(() => {
+      res.status(403).end()
+    })
 })
 
 router.post('/leave', (req, res) => {

@@ -1,6 +1,7 @@
 const http = require('http')
 const consola = require('consola')
 const { Builder } = require('nuxt')
+const { createConnection } = require('typeorm')
 const config = require('../nuxt.config.js')
 const nuxt = require('./middlewares/nuxt')
 const app = require('./app')
@@ -13,6 +14,8 @@ config.dev = process.env.NODE_ENV !== 'production'
 
 async function start () {
   const { host, port } = nuxt.options.server
+
+  await createConnection()
 
   // Build only in dev mode
   if (config.dev) {
