@@ -53,8 +53,12 @@ export default {
     }
   },
   mounted () {
-    this.socket.on('joined', () => {
+    this.socket.on('connect', (param) => {
       this.isJoined = true
+    })
+    this.socket.on('error', () => {
+      alert('socket connection error')
+      this.$router.replace({ path: `/join` })
     })
     this.socket.on('incoming', (param) => {
       this.messages.push(param.message)

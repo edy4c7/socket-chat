@@ -5,6 +5,16 @@ io.use((socket, next) => {
   session(socket.request, socket.request.res, next)
 })
 
+io.use((socket, next) => {
+  const roomId = socket.handshake.query.roomId
+  const rooms = socket.request.session.rooms || []
+  if (!rooms.includes(roomId)) {
+    return next(new Error('Unauthorized'))
+  }
+
+  return next()
+})
+
 io.on('connection', (socket) => {
   const roomId = socket.handshake.query.roomId
 
