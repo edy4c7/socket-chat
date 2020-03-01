@@ -9,7 +9,10 @@ router.post('/join', (req, res) => {
   const repo = conn.getRepository(Room)
   let room = null
 
-  repo.findOne({ id: req.body.roomId })
+  repo.findOne({
+    select: ['id', 'password', 'expireDate'],
+    id: req.body.roomId
+  })
     .then((result) => {
       room = result
       if (moment().isAfter(moment(result.expireDate))) {

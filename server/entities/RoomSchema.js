@@ -10,6 +10,7 @@ module.exports = new EntitySchema({
       type: 'varchar'
     },
     password: {
+      select: false,
       type: 'varchar'
     },
     createdAt: {
