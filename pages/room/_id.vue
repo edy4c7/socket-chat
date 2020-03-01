@@ -56,7 +56,7 @@ export default {
       this.isJoined = true
       this.$axios.$get(`/api/room/${this.$route.params.id}`)
         .then((res) => {
-          this.messages = res
+          this.messages = res.messages
         })
     })
     this.socket.on('error', () => {

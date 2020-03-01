@@ -4,7 +4,6 @@ const nanoid = require('nanoid')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
 const Room = require('../../models/Room')
-const Message = require('../../models/Message')
 
 function auth (req, res, next) {
   const rooms = req.session.rooms || []
@@ -21,12 +20,11 @@ router.post('/', (req, res) => {
   bcrypt.hash(req.body.password, 10)
     .then((h) => { password = h })
     .then(() => {
-      const room = new Room(
-        nanoid(),
-        password,
-        moment().format(),
-        moment().add(1, 'days').format()
-      )
+      const room = new Room()
+
+      room.id = nanoid(10)
+      room.password = password
+      room.expireDate = moment().add(1, 'days').format()
 
       const repo = conn.getRepository(Room)
       return repo.save(room)
@@ -48,26 +46,13 @@ router.post('/', (req, res) => {
 
 router.get('/:id', auth, (req, res) => {
   const conn = getConnection()
-  // const repo = conn.getRepository(Room)
-  // repo.findOne({
-  //   id: req.params.id,
-  //   relations: ['messages']
-  // })
-  //   .then((room) => {
-  //     console.log(room)
-  //     return res.send(room)
-  //   })
-  //   .catch((e) => {
-  //     console.log(e)
-  //     return res.status(500).send(e)
-  //   })
-  const repo = conn.getRepository(Message)
-  repo.find({
-    room: req.params.id,
-    relations: ['room']
+  const repo = conn.getRepository(Room)
+  repo.findOne({
+    id: req.params.id,
+    relations: ['messages']
   })
-    .then((m) => {
-      return res.send(m)
+    .then((room) => {
+      return res.send(room)
     })
     .catch((e) => {
       return res.status(500).send(e)

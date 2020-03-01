@@ -14,10 +14,19 @@ module.exports = new EntitySchema({
       type: 'varchar'
     },
     createdAt: {
-      type: 'datetime'
+      type: 'datetime',
+      createDate: true
     },
     expireDate: {
       type: 'datetime'
+    }
+  },
+  relations: {
+    messages: {
+      target: 'Message',
+      type: 'one-to-many',
+      joinColumn: true,
+      inverseSide: 'room'
     }
   }
 })

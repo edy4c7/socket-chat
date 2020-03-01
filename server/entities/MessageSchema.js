@@ -22,9 +22,8 @@ module.exports = new EntitySchema({
     room: {
       target: 'Room',
       type: 'many-to-one',
-      joinColumn: {
-        name: 'room'
-      }
+      joinColumn: true,
+      inverseSide: 'messages'
     }
   }
 })
