@@ -4,6 +4,16 @@ const nanoid = require('nanoid')
 const bcrypt = require('bcrypt')
 const moment = require('moment')
 const Room = require('../../models/Room')
+const Message = require('../../models/Message')
+
+function auth (req, res, next) {
+  const rooms = req.session.rooms || []
+  if (!rooms.includes(req.params.id)) {
+    res.status(403).end()
+    return
+  }
+  next()
+}
 
 router.post('/', (req, res) => {
   const conn = getConnection()
@@ -33,6 +43,34 @@ router.post('/', (req, res) => {
     })
     .catch((e) => {
       res.status(500).json({ message: e })
+    })
+})
+
+router.get('/:id', auth, (req, res) => {
+  const conn = getConnection()
+  // const repo = conn.getRepository(Room)
+  // repo.findOne({
+  //   id: req.params.id,
+  //   relations: ['messages']
+  // })
+  //   .then((room) => {
+  //     console.log(room)
+  //     return res.send(room)
+  //   })
+  //   .catch((e) => {
+  //     console.log(e)
+  //     return res.status(500).send(e)
+  //   })
+  const repo = conn.getRepository(Message)
+  repo.find({
+    room: req.params.id,
+    relations: ['room']
+  })
+    .then((m) => {
+      return res.send(m)
+    })
+    .catch((e) => {
+      return res.status(500).send(e)
     })
 })
 

@@ -25,6 +25,7 @@ export default {
         const res = await this.$axios.$post('/api/room', {
           password: this.password
         })
+        await this.$auth.fetchUser()
         this.$router.replace({ path: `/room/${res.roomId}` })
       } catch (err) {
         // eslint-disable-next-line

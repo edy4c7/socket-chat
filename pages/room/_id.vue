@@ -10,7 +10,7 @@
     </form>
     <ul>
       <li v-for="(m, i) in messages" :key="i">
-        {{ m }}
+        {{ m.text }}
       </li>
     </ul>
     <b-field label="URL for join">
@@ -28,8 +28,7 @@
 import io from 'socket.io-client'
 
 export default {
-  async middleware ({ store, redirect, params, $auth }) {
-    await $auth.fetchUser()
+  middleware ({ store, redirect, params }) {
     const rooms = store.state.auth.user.rooms || []
     if (!rooms.includes(params.id)) {
       redirect({ path: `/join?roomId=${params.id}` })
@@ -55,13 +54,17 @@ export default {
   mounted () {
     this.socket.on('connect', (param) => {
       this.isJoined = true
+      this.$axios.$get(`/api/room/${this.$route.params.id}`)
+        .then((res) => {
+          this.messages = res
+        })
     })
     this.socket.on('error', () => {
       alert('socket connection error')
       this.$router.replace({ path: `/join` })
     })
     this.socket.on('incoming', (param) => {
-      this.messages.push(param.message)
+      this.messages.push(param)
     })
   },
   methods: {
