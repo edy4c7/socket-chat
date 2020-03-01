@@ -51,13 +51,13 @@ export default {
       return `${process.env.baseUrl}/join?roomId=${this.$route.params.id}`
     }
   },
+  async asyncData ({ $axios, params }) {
+    const res = await $axios.$get(`/api/room/${params.id}`)
+    return { messages: res.messages }
+  },
   mounted () {
     this.socket.on('connect', (param) => {
       this.isJoined = true
-      this.$axios.$get(`/api/room/${this.$route.params.id}`)
-        .then((res) => {
-          this.messages = res.messages
-        })
     })
     this.socket.on('error', () => {
       alert('socket connection error')
